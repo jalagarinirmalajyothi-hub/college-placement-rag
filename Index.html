@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RAG College Placement Assistant</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background: #f4f7fb;
+    color: #222;
+}
+
+header {
+    background: #173b7a;
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
+
+header h1 {
+    margin-bottom: 8px;
+}
+
+.container {
+    max-width: 1000px;
+    margin: 30px auto;
+    padding: 20px;
+}
+
+.card {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    margin-bottom: 20px;
+}
+
+h2 {
+    color: #173b7a;
+    margin-bottom: 15px;
+}
+
+textarea {
+    width: 100%;
+    height: 100px;
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    resize: none;
+    font-size: 16px;
+}
+
+button {
+    background: #173b7a;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 7px;
+    cursor: pointer;
+    margin-top: 12px;
+}
+
+button:hover {
+    background: #0e2a59;
+}
+
+.answer {
+    margin-top: 20px;
+    background: #eef4ff;
+    padding: 20px;
+    border-radius: 8px;
+    line-height: 1.6;
+}
+
+.source {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #555;
+}
+
+.companies {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 15px;
+}
+
+.company {
+    background: #f5f7fa;
+    padding: 18px;
+    border-radius: 8px;
+    border-left: 5px solid #173b7a;
+}
+
+ul {
+    margin-left: 20px;
+    line-height: 1.8;
+}
+
+footer {
+    text-align: center;
+    padding: 20px;
+    color: #666;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>🎓 AI College Placement Assistant</h1>
+    <p>RAG-Based Placement Information System</p>
+</header>
+
+<div class="container">
+
+    <div class="card">
+        <h2>💬 Ask Placement Assistant</h2>
+
+        <textarea id="question"
+        placeholder="Example: What is the eligibility criteria for TCS?"></textarea>
+
+        <button onclick="askQuestion()">Ask AI Assistant</button>
+
+        <div id="answer" class="answer" style="display:none;"></div>
+    </div>
+
+    <div class="card">
+        <h2>🏢 Placement Companies</h2>
+
+        <div class="companies">
+
+            <div class="company">
+                <h3>TCS</h3>
+                <p>Software & IT Services</p>
+            </div>
+
+            <div class="company">
+                <h3>Infosys</h3>
+                <p>IT & Consulting</p>
+            </div>
+
+            <div class="company">
+                <h3>Wipro</h3>
+                <p>IT Services</p>
+            </div>
+
+            <div class="company">
+                <h3>Accenture</h3>
+                <p>Technology & Consulting</p>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>📋 Placement Information</h2>
+
+        <ul>
+            <li>Minimum academic requirement: 60%</li>
+            <li>Students should not have active backlogs</li>
+            <li>MCA students can apply for eligible IT positions</li>
+            <li>Students must register before the placement deadline</li>
+            <li>Resume should be updated before applying</li>
+        </ul>
+    </div>
+
+</div>
+
+<footer>
+    © 2026 College Placement Assistant | MCA Project
+</footer>
+
+
+<script>
+
+/*
+   SIMPLE RAG DEMO
+
+   Knowledge Base = College placement documents
+   Retrieval = Keyword matching
+   Generation = Display relevant answer
+
+   Real RAG would use:
+   Documents → Embeddings → Vector DB → LLM
+*/
+
+const knowledgeBase = [
+
+{
+    keywords: ["tcs", "eligibility"],
+    answer:
+    "For the TCS placement drive, students should generally have at least 60% academic performance and should not have active backlogs. MCA students can apply when the specific job notification allows MCA candidates.",
+    source: "TCS Placement Notification"
+},
+
+{
+    keywords: ["infosys", "eligibility"],
+    answer:
+    "The Infosys placement opportunity is available for eligible students from relevant computer and IT programs. Students should check the current college notification for the exact percentage and backlog requirements.",
+    source: "Infosys Placement Notification"
+},
+
+{
+    keywords: ["wipro", "eligibility"],
+    answer:
+    "Wipro placement generally requires students to satisfy the academic percentage, degree and backlog conditions mentioned in the current recruitment notification.",
+    source: "Wipro Placement Notification"
+},
+
+{
+    keywords: ["accenture", "eligibility"],
+    answer:
+    "Accenture recruitment eligibility depends on the particular job role. Students should check the current placement notification for academic percentage, degree and backlog requirements.",
+    source: "Accenture Placement Notification"
+},
+
+{
+    keywords: ["mca", "companies"],
+    answer:
+    "MCA students can apply for eligible IT and software roles offered by companies such as TCS, Infosys, Wipro and Accenture, depending on the requirements of each placement drive.",
+    source: "College Placement Database"
+},
+
+{
+    keywords: ["backlog", "eligibility"],
+    answer:
+    "Students with active backlogs may not be eligible for some placement drives. The exact requirement depends on the company and its current recruitment notification.",
+    source: "College Placement Rules"
+},
+
+{
+    keywords: ["resume"],
+    answer:
+    "Students should keep an updated resume containing education, technical skills, projects, certifications and achievements. A clear one-page resume is recommended for campus placements.",
+    source: "Placement Training Guidelines"
+},
+
+{
+    keywords: ["interview", "prepare"],
+    answer:
+    "For placement interviews, prepare programming fundamentals, data structures, databases, operating systems, computer networks, aptitude, communication skills and questions related to your projects.",
+    source: "Placement Training Material"
+},
+
+{
+    keywords: ["placement", "process"],
+    answer:
+    "The typical placement process consists of registration, eligibility screening, aptitude or coding test, technical interview, HR interview and final selection.",
+    source: "College Placement Process"
+}
+
+];
+
+
+function askQuestion() {
+
+    const question =
+        document.getElementById("question").value
+        .toLowerCase()
+        .trim();
+
+    const answerBox =
+        document.getElementById("answer");
+
+    if (question === "") {
+
+        answerBox.style.display = "block";
+
+        answerBox.innerHTML =
+        "⚠️ Please enter a question.";
+
+        return;
+    }
+
+    let bestMatch = null;
+    let highestScore = 0;
+
+    knowledgeBase.forEach(item => {
+
+        let score = 0;
+
+        item.keywords.forEach(keyword => {
+
+            if (question.includes(keyword)) {
+                score++;
+            }
+
+        });
+
+        if (score > highestScore) {
+
+            highestScore = score;
+            bestMatch = item;
+
+        }
+
+    });
+
+
+    answerBox.style.display = "block";
+
+
+    if (bestMatch) {
+
+        answerBox.innerHTML = `
+            <strong>🤖 AI Assistant:</strong><br><br>
+
+            ${bestMatch.answer}
+
+            <div class="source">
+                📚 Retrieved Source:
+                <strong>${bestMatch.source}</strong>
+            </div>
+        `;
+
+    }
+
+    else {
+
+        answerBox.innerHTML = `
+            <strong>🤖 AI Assistant:</strong><br><br>
+
+            I could not find relevant information
+            in the college placement knowledge base.
+
+            <br><br>
+
+            Please try asking about:
+            <ul>
+                <li>Company eligibility</li>
+                <li>MCA placements</li>
+                <li>Resume</li>
+                <li>Interview preparation</li>
+                <li>Placement process</li>
+                <li>Backlog requirements</li>
+            </ul>
+        `;
+
+    }
+
+}
+
+</script>
+
+</body>
+</html>
